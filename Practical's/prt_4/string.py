@@ -39,5 +39,5 @@ print("Is digit: ", str1.isdigit())
 
 
 '''
-Omtanuse
+
 '''
