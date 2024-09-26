@@ -36,3 +36,8 @@ print("Starts with : ", str1.startswith('hello'))
 #isdigit()
 print("Is digit: ", '12345'.isdigit())
 print("Is digit: ", str1.isdigit())
+
+
+'''
+Omtanuse
+'''
