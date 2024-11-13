@@ -6,6 +6,8 @@ import threading
 
 engine = pyttsx3.init()
 engine.setProperty('rate', 110)
+lock = threading.Lock()  # Add a lock for thread safety
+
 
 def speak_text():
     # Use threading to prevent the GUI from freezing or causing segmentation faults
@@ -14,8 +16,9 @@ def speak_text():
         threading.Thread(target=run_speak, args=(text,)).start()
 
 def run_speak(text):
-    engine.say(text)
-    engine.runAndWait()
+    with lock:
+        engine.say(text)
+        engine.runAndWait()
 
 def read_pdf():
     file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
@@ -30,7 +33,8 @@ def read_pdf():
             text_box.insert("1.0", text)
 
 def stop_speech():
-    engine.stop()
+    with lock:
+        engine.stop()
 
 def reset():
     text_box.delete("1.0", "end")
