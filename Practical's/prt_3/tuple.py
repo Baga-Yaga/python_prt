@@ -7,7 +7,7 @@ print("Count : ", tup1.count('amar'))
 # index()
 
 print("Index of 'prem': ", tup1.index('prem'))
-
+#heyy
 
 # Converting tup1 to list for modification
 list1 = list(tup1)
