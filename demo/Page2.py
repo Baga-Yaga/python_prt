@@ -42,6 +42,9 @@ def change_rate(event):
 
 def change_voice(event):
     voices = engine.getProperty('voices')
+    for i, voice in enumerate(voices):
+        print(f"{i}: {voice.name}")
+    #print("Voice :",voices)
     engine.setProperty('voice', voices[0].id if voice_var.get() == "Male" else voices[1].id)
 
 root = tk.Tk()
