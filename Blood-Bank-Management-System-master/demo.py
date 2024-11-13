@@ -3,42 +3,32 @@ import MySQLdb
 from tkinter import *
 from PIL import Image
 
+
 # Database connection
-db = MySQLdb.connect("localhost", "root", "", "bbms")
+db = MySQLdb.connect("localhost", "root", "root", "bbms")
 cursor = db.cursor()
 
 # Main Tkinter window
 root = Tk()
-image1 = PhotoImage(file="donation.gif")
-panel = Label(root, image=image1, bg="black").place(x=0, y=0, relwidth=1, relheight=1)
+image1 = PhotoImage(file="1.gif")
+panel = Label(root, image=image1, bg="antique white").place(x=0, y=0, relwidth=1, relheight=1)
 root.title("BLOOD BANK")
 root.geometry("1920x1080")
 root.configure(background='white')
 
 # Labels and Buttons for main window
-l3 = Label(root, text="BLOOD BANK SYSTEM", bg='white', font="Helvetica 15 bold").place(x=450, y=40, w=300, h=40)
+l3 = Label(root, text="BLOOD BANK SYSTEM", bg='white', font="Helvetica 15 bold").place(x=650, y=40, w=300, h=40)
 l1 = Label(root, text="Click to enter the details of the donor", bg='white', font="Helvetica 12").place(x=80, y=100, w=300, h=40)
 b1 = Button(root, text="Donor Details", command=lambda: donordetails()).place(x=80, y=150)
-l2 = Label(root, text="Click to enter the details of the blood", bg='white', font="Helvetica 12").place(x=80, y=200, w=300, h=40)
-b2 = Button(root, text="Blood Details", command=lambda: blooddetails()).place(x=80, y=250)
-l3 = Label(root, text="Click to make a request for blood", bg='white', font="Helvetica 12").place(x=80, y=300, w=300, h=40)
-b3 = Button(root, text="Blood Request", command=lambda: requestblood()).place(x=80, y=350)
-b4 = Button(root, text="Exit", command=lambda: stop(root)).place(x=80, y=400)
+l2 = Label(root, text="Click to make a request for blood", bg='white', font="Helvetica 12").place(x=80, y=200, w=300, h=40)
+b3 = Button(root, text="Blood Request", command=lambda: requestblood()).place(x=80, y=250)
+b4 = Button(root, text="Exit", command=lambda: stop(root)).place(x=80, y=300)
 
 v = StringVar()  # For gender selection
 
-# Function to insert donor details into the database
-def insertDonor(name, age, gender, address, contactno):
-    insert = "INSERT INTO donors(name, age, gender, address, contactno) VALUES('" + name + "', '" + age + "', '" + gender + "', '" + address + "', '" + contactno + "')"
-    try:
-        cursor.execute(insert)
-        db.commit()
-    except:
-        db.rollback()
-
-# Function to insert blood details into the database
-def insertBlood(bloodgroup, platelet, rbc):
-    insert = "INSERT INTO blood(bloodgroup, platelet, rbc, date) VALUES('" + bloodgroup + "', '" + platelet + "', '" + rbc + "', CURDATE())"
+# Function to insert donor details (including blood details) into the database
+def insertDonor(name, age, gender, address, contactno, bloodgroup, platelet, rbc, quantity):
+    insert = "INSERT INTO donors(name, age, gender, address, contactno, bloodgroup, platelet, rbc, quantity) VALUES('" + name + "', '" + age + "', '" + gender + "', '" + address + "', '" + contactno + "', '" + bloodgroup + "', '" + platelet + "', '" + rbc + "', '" + quantity + "')"
     try:
         cursor.execute(insert)
         db.commit()
@@ -64,7 +54,7 @@ def retrieve(bg):
 def donordetails():
     donor_window = Toplevel()
     donor_window.title("BLOOD BANK")
-    donor_window.geometry("1024x768")
+    donor_window.geometry("480x580")
     donor_window.configure(background='#FF8F8F')
 
     # Labels for donor details
@@ -73,7 +63,11 @@ def donordetails():
     l3 = Label(donor_window, text="Gender:", bg='white', font="Helvetica 12").place(x=40, y=120)
     l4 = Label(donor_window, text="Address:", bg='white', font="Helvetica 12").place(x=40, y=220)
     l5 = Label(donor_window, text="Contact:", bg='white', font="Helvetica 12").place(x=40, y=260)
-
+    l6 = Label(donor_window, text="BG:", bg='white', font="Helvetica 12").place(x=40, y=300)
+    l7 = Label(donor_window, text="Platelet :", bg='white', font="Helvetica 12").place(x=40, y=340)
+    l8 = Label(donor_window, text="RBC :", bg='white', font="Helvetica 12").place(x=40, y=380)
+    l9 = Label(donor_window, text="Quantity of Blood (ml):", bg='white', font="Helvetica 12").place(x=40, y=420)
+    
     # Entry fields for donor details
     e1 = Entry(donor_window)
     e1.place(x=120, y=40)
@@ -86,6 +80,15 @@ def donordetails():
     e4.place(x=120, y=220)
     e5 = Entry(donor_window)
     e5.place(x=120, y=260)
+    e6 = Entry(donor_window)
+    e6.place(x=120, y=300)
+    e7 = Entry(donor_window)
+    e7.place(x=120, y=340)
+    e8 = Entry(donor_window)
+    e8.place(x=120, y=380)
+    e9 = Entry(donor_window)
+    e9.insert(0, "250")  # Default value for blood quantity
+    e9.place(x=200, y=420)
 
     # Submit details function
     def submit_details():
@@ -94,46 +97,22 @@ def donordetails():
         gender = v.get()  # Get selected gender
         address = e4.get()
         contactno = e5.get()
+        bloodgroup = e6.get()
+        platelet = e7.get()
+        rbc = e8.get()
+        quantity = e9.get()  # Get quantity
 
         # Call the insertDonor function to add donor details to the database
-        insertDonor(name, age, gender, address, contactno)
+        insertDonor(name, age, gender, address, contactno, bloodgroup, platelet, rbc, quantity)
         donor_window.destroy()  # Close the donor details window after submitting
 
     # Submit button
-    submit_button = Button(donor_window, text="Submit", command=submit_details).place(x=40, y=300)
+    submit_button = Button(donor_window, text="Submit", command=submit_details).place(x=40, y=460)
 
     # Back button
-    back_button = Button(donor_window, text="Back", command=lambda: stop(donor_window)).place(x=120, y=300)
+    back_button = Button(donor_window, text="Back", command=lambda: stop(donor_window)).place(x=120, y=460)
 
-# Blood Details Window
-def blooddetails():
-    blood_window = Tk()
-    blood_window.title("BLOOD BANK")
-    blood_window.geometry("1024x768")
-    blood_window.configure(background='#FF8F8F')
-
-    # Labels for blood details
-    l1 = Label(blood_window, text="Blood Group:", font="Helvetica 12").place(x=40, y=40, w=250, h=20)
-    l2 = Label(blood_window, text="Platelet count (in 100 thousands):", font="Helvetica 12").place(x=40, y=80, w=250, h=20)
-    l3 = Label(blood_window, text="RBC count (in millions):", font="Helvetica 12").place(x=40, y=120, w=250, h=20)
-
-    # Entry fields for blood details
-    e1 = Entry(blood_window)
-    e1.place(x=350, y=40)
-    e2 = Entry(blood_window)
-    e2.place(x=350, y=80)
-    e3 = Entry(blood_window)
-    e3.place(x=350, y=120)
-
-    # Back button
-    back_button = Button(blood_window, text="Back", command=lambda: stop(blood_window)).place(x=200, y=160)
-
-    # Submit button
-    submit_button = Button(blood_window, text="Submit", command=lambda: insertBlood(e1.get(), e2.get(), e3.get())).place(x=40, y=160)
-
-    blood_window.mainloop()
-
-# Function to display matching donors based on blood group
+# Function to display matching donors based on blood group and confirm order
 def grid1(bg):
     matching_donors_window = Tk()
     matching_donors_window.title("LIST OF MATCHING DONORS")
@@ -161,36 +140,26 @@ def grid1(bg):
         Label(matching_donors_window, text=row[1], bg="white", font="Verdana 15 bold").grid(row=x, column=1, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
         Label(matching_donors_window, text=row[2], bg="white", font="Verdana 15 bold").grid(row=x, column=2, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
         Label(matching_donors_window, text=row[3], bg="white", font="Verdana 15 bold").grid(row=x, column=3, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
-        Label(matching_donors_window, text=row[4], bg="white", font="Verdana 15 bold").grid(row=x, column=4, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
-        Label(matching_donors_window, text=row[5], bg="white", font="Verdana 15 bold").grid(row=x, column=5, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
-        Label(matching_donors_window, text=row[6], bg="white", font="Verdana 15 bold").grid(row=x, column=6, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)  # Blood group column
         x += 1
+
+    # Add quantity field and confirm button for placing an order
+    Label(matching_donors_window, text="Quantity to Order (ml):", bg="white", font="Helvetica 12").grid(row=x, column=0, padx=5, pady=5, ipadx=5, ipady=5)
+    quantity_entry = Entry(matching_donors_window)
+    quantity_entry.insert(0, "250")  # Default value for quantity
+    quantity_entry.grid(row=x, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+
+    # Confirm button function
+    def confirm_order():
+        quantity = quantity_entry.get()
+        # You can handle placing the order with the selected quantity here
+        print("Order Confirmed with Quantity:", quantity)
+        matching_donors_window.destroy()
+
+    confirm_button = Button(matching_donors_window, text="Confirm Order", command=confirm_order)
+    confirm_button.grid(row=x+1, column=0, columnspan=4, pady=10)
 
     matching_donors_window.mainloop()
 
 
-# Function to handle blood request window
-def requestblood():
-    request_window = Tk()
-    request_window.title("BLOOD REQUEST")
-    request_window.geometry("1024x768")
-    request_window.configure(background='#FF8F8F')
-
-    # Labels and Entry for blood group
-    l1 = Label(request_window, text="Blood Group:", font="Helvetica 12").place(x=40, y=40, w=250, h=20)
-    e1 = Entry(request_window)
-    e1.place(x=350, y=40)
-
-    # Submit button
-    submit_button = Button(request_window, text="Submit", command=lambda: grid1(e1.get())).place(x=40, y=80)
-
-    # Back button
-    back_button = Button(request_window, text="Back", command=lambda: stop(request_window)).place(x=120, y=80)
-
-    request_window.mainloop()
-
-# Function to close windows
-def stop(window):
-    window.destroy()
-
+# Start the main application
 root.mainloop()
