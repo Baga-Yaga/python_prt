@@ -18,3 +18,4 @@ class LoginForm(forms.Form):
         if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$', password):
             raise forms.ValidationError('Password must be at least 8 characters long and contain at least one uppercase letter, one digit, and one special character.')
         return password
+#heyy
