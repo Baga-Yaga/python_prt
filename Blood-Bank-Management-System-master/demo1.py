@@ -3,10 +3,10 @@ import MySQLdb
 from tkinter import *
 from PIL import Image
 
-from demo import requestblood
+#from demo import requestblood
 
 # Database connection
-db = MySQLdb.connect("localhost", "root", "", "bbms")
+db = MySQLdb.connect("localhost", "root", "root", "bbms")
 cursor = db.cursor()
 
 # Main Tkinter window
@@ -139,6 +139,25 @@ def grid1(bg):
         x += 1
 
     matching_donors_window.mainloop()
+
+def requestblood():
+    request_window = Tk()
+    request_window.title("BLOOD REQUEST")
+    request_window.geometry("1024x768")
+    request_window.configure(background='#FF8F8F')
+
+    # Labels and Entry for blood group
+    l1 = Label(request_window, text="Blood Group:", font="Helvetica 12").place(x=40, y=40, w=250, h=20)
+    e1 = Entry(request_window)
+    e1.place(x=350, y=40)
+
+    # Submit button
+    submit_button = Button(request_window, text="Submit", command=lambda: grid1(e1.get())).place(x=40, y=80)
+
+    # Back button
+    back_button = Button(request_window, text="Back", command=lambda: stop(request_window)).place(x=120, y=80)
+
+    request_window.mainloop()
 
 # To exit the program
 def stop(window):
